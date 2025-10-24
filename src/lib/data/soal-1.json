@@ -1,0 +1,23 @@
+{
+  "title": "Latihan 1: Penjumlahan Sederhana",
+  "items": [
+    {
+      "a": 3,
+      "b": 2,
+      "highlight": "red",
+      "answer": 5
+    },
+    {
+      "a": 4,
+      "b": 3,
+      "highlight": "blue",
+      "answer": 7
+    },
+    {
+      "a": 9,
+      "b": 1,
+      "highlight": "red",
+      "answer": 10
+    }
+  ]
+}

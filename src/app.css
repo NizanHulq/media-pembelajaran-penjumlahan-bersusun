@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Utility for "timbul/emboss" look */
+.emboss {
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.25)) drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  transform: translateZ(0);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-3 font-semibold shadow-sm active:scale-[0.98] transition;
+}
+.btn-primary { @apply bg-blue-600 text-white hover:bg-blue-700; }
+.btn-ghost { @apply bg-white border border-gray-300 hover:bg-gray-50; }
+
+.card {
+  @apply rounded-2xl bg-white p-4 shadow;
+}
+
+html {
+  /* Responsive type scale for kids: bigger base */
+  font-size: clamp(16px, 2.8vw, 18px);
+}
+
+/* Fonts utility (from Google Fonts loaded in +layout) */
+.font-display { font-family: 'Lilita One', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+.font-hand { font-family: 'Kalam', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+/* Hero title style approximating the image:
+   - Yellow fill
+   - Bold blue outline via multi-direction text-shadow
+   - Soft sticker-like white rim and shadow for punchy look */
+.hero-title {
+  --title-yellow: #ffd62e;
+  --title-blue: #1e40af; /* blue-800 */
+  --title-shadow: rgba(2, 6, 23, 0.45); /* slate-950 */
+  color: var(--title-yellow);
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  /* blue outline (approx) */
+  text-shadow:
+    3px 0 var(--title-blue), -3px 0 var(--title-blue),
+    0 3px var(--title-blue), 0 -3px var(--title-blue),
+    2px 2px var(--title-blue), -2px 2px var(--title-blue),
+    2px -2px var(--title-blue), -2px -2px var(--title-blue),
+    /* subtle dark drop */
+    8px 10px 0 var(--title-shadow);
+}
+
+/* Optional white halo around the title using drop-shadows on a wrapper */
+.title-halo {
+  filter:
+    drop-shadow(0 0 0 #fff)
+    drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+    drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff);
+}
+
+/* Big circular Play CTA; will also show your PNG if placed at /assets/images/play.png */
+.play-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: clamp(140px, 42vw, 220px);
+  transition: transform 140ms ease;
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.play-cta:focus-visible { outline: 4px solid rgba(59,130,246,.5); outline-offset: 4px; }
+.play-cta:active {
+  transform: scale(0.94);
+}
+.play-cta img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Home hero background */
+.home-hero {
+  /* Always fit full width; never crop left/right.
+     Keep aspect ratio and allow extra height below. */
+  background:
+    url('/assets/images/backgrounds/bg-home.png') top center / 100% auto no-repeat,
+    linear-gradient(180deg, #e6eaff 0%, #dbe6ff 100%); /* fill remainder height */
+  min-height: 100dvh; /* better on mobile browsers */
+  display: grid;
+  place-items: end center; /* button nearer to bottom like poster */
+  padding-bottom: clamp(56px, 14vh, 128px);
+  padding-left: max(env(safe-area-inset-left, 0px), 12px);
+  padding-right: max(env(safe-area-inset-right, 0px), 12px);
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .home-hero {
+    place-items: center; /* center in short landscape devices */
+    padding-bottom: 16px;
+  }
+  .play-cta { width: clamp(72px, 18vh, 140px); }
+}
