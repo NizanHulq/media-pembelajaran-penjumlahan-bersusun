@@ -1,0 +1,15 @@
+{
+	"/": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/about": [
+		"src/routes/+layout.js"
+	],
+	"/latihan/[id]": [
+		"src/routes/+layout.js"
+	],
+	"/petunjuk": [
+		"src/routes/+layout.js"
+	]
+}
