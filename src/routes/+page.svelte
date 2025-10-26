@@ -1,5 +1,6 @@
 <script>
   import { animate, spring } from 'motion';
+  import { pressable } from '$lib/actions/pressable';
   let playBtn;
   function start() {
     if (playBtn) {
@@ -18,6 +19,7 @@
   <div class="home-hero">
     <button
       class="play-cta"
+      use:pressable
       bind:this={playBtn}
       aria-label="Mulai"
       on:click={start}

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { animate, spring } from 'motion';
   import data from '$data/soal-1.json';
+  import { pressable } from '$lib/actions/pressable';
 
   export let params;
   let idx = 0; // question index
@@ -61,9 +62,9 @@
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-extrabold">{data.title}</h1>
     <nav class="flex gap-2">
-      <button class="btn btn-ghost" on:click={back}>Back</button>
-      <button class="btn btn-ghost" on:click={() => (location.href = '/')} >Home</button>
-      <button class="btn btn-primary" on:click={next}>Next</button>
+      <button class="btn btn-ghost" use:pressable on:click={back}>Back</button>
+      <button class="btn btn-ghost" use:pressable on:click={() => (location.href = '/')} >Home</button>
+      <button class="btn btn-primary" use:pressable on:click={next}>Next</button>
     </nav>
   </div>
 

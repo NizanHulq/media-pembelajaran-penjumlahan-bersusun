@@ -1,3 +1,7 @@
+<script>
+  import { pressable } from '$lib/actions/pressable';
+</script>
+
 <svelte:head>
   <title>Petunjuk Penggunaan</title>
 </svelte:head>
@@ -15,12 +19,12 @@
     </ol>
   </div>
 
-  <a href="/" class="guide-btn home" aria-label="Kembali ke halaman utama">
+  <a href="/" class="guide-btn home" aria-label="Kembali ke halaman utama" use:pressable>
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>
   </a>
 
-  <a href="/" class="guide-btn previous" aria-label="Halaman sebelumnya: Home">
+  <a href="/" class="guide-btn previous" aria-label="Halaman sebelumnya: Home" use:pressable>
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>
   </a>
@@ -28,6 +32,7 @@
   <a
     href="/about"
     class="guide-btn next"
+    use:pressable
     aria-label="Halaman selanjutnya: Tentang"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
@@ -43,8 +48,7 @@
     justify-content: center;
     min-height: 100dvh;
     background:
-      url("/assets/images/backgrounds/bg-guides.png") top center / 100% auto
-        no-repeat,
+      url("/assets/images/backgrounds/bg-guides.png") top center / 100% 100% no-repeat,
       linear-gradient(180deg, #e6eaff 0%, #dbe6ff 100%);
     padding: clamp(1rem, 4vw, 3rem);
     padding-left: max(
