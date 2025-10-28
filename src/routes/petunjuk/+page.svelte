@@ -31,7 +31,7 @@
 
   <a
     href="/about"
-    class="guide-btn next"
+    class="guide-btn next glow-blue"
     use:pressable
     aria-label="Halaman selanjutnya: Tentang"
   >

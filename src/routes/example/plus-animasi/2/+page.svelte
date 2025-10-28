@@ -2,23 +2,20 @@
   import { pressable } from "$lib/actions/pressable";
   import { animate, spring } from "motion";
 
-  // Pilihan angka 1–9 dan 0
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   const srcFor = (n) => `/assets/images/number-choose/${n}.png`;
 
-  // Konfigurasi animasi (ubah angka ini untuk atur kecepatan/feel)
-  const ANIM_UP_DURATION = 4; // detik tahap naik
-  const ANIM_LEFT_DURATION = 2; // detik tahap belok kiri
-  const ANIM_UP_SPRING = { stiffness: 180, damping: 28 };
-  const ANIM_LEFT_SPRING = { stiffness: 180, damping: 28 };
+  const ANIM_UP_DURATION = 7; // samakan dengan halaman 1
+  const ANIM_LEFT_DURATION = 4; // samakan dengan halaman 1
+  const ANIM_UP_SPRING = { stiffness: 30, damping: 14 }; // samakan
+  const ANIM_LEFT_SPRING = { stiffness: 50, damping: 14 }; // samakan
 
-  // State slot jawaban. Urutan awal: tengah -> kanan. (kiri akan dibuka setelah benar)
   let slots = { left: null, center: null, right: null };
   let fillOrder = ["center", "right"];
   let slotLocked = { left: true, center: false, right: false };
   let activeSlot = "center";
 
-  // Kunci jawaban: center=1 dan right=0
+  // Placeholder kunci; akan disesuaikan kemudian
   let kunci = { center: 1, right: 0 };
 
   let containerEl;
@@ -34,6 +31,7 @@
   $: rightBlue =
     (slots.center === kunci.center && slots.right === kunci.right) ||
     firstStageDone;
+  $: showNextGlow = firstStageDone && slots.left === 2;
 
   function nextTargetSlot() {
     for (const key of fillOrder) {
@@ -75,11 +73,9 @@
     const containerRect = containerEl.getBoundingClientRect();
     const slotRect = centerSlotEl.getBoundingClientRect();
 
-    // Titik awal (tengah slot tengah)
     const startX = slotRect.left - containerRect.left + slotRect.width / 2;
     const startY = slotRect.top - containerRect.top + slotRect.height / 2;
 
-    // Buat elemen digit terbang (clone visual)
     const el = document.createElement("div");
     el.className = "flying-digit";
     el.textContent = String(slots.center);
@@ -89,24 +85,19 @@
       top: `${startY}px`,
       transform: "translate(-50%, -50%)",
       zIndex: 50,
-      fontSize: "clamp(64px, 10vw, 120px)",
-      fontFamily: "Kalam, system-ui, -apple-system, sans-serif",
-      fontWeight: "700",
+      fontSize: "clamp(100px, 11vw, 132px)",
+      fontFamily: "'Baloo 2', system-ui, -apple-system, sans-serif",
+      fontWeight: "800",
     });
     containerEl.appendChild(el);
 
-    // Sembunyikan digit asli di slot tengah selama animasi
     centerSlotEl.classList.add("digit-hidden");
 
-    // Target 1: ketinggian ~20% layar (berarti naik ~80% dari posisi bawah)
     const upY = containerRect.height * 0.1;
-    const dyUp = upY - startY; // negatif (naik)
-
-    // Target 2: 10% lebar dari kiri
+    const dyUp = upY - startY;
     const finalX = containerRect.width * 0.1;
     const dxLeft = finalX - startX;
 
-    // Mulai warna biru saat benar
     el.style.color = "#2563eb";
 
     animate(
@@ -129,11 +120,9 @@
         },
         { duration: ANIM_LEFT_DURATION, easing: spring(ANIM_LEFT_SPRING) },
       ).finished.then(() => {
-        // Sampai tujuan: warnai merah dan buka tahap 2
         el.style.color = "#ef4444";
         firstStageDone = true;
         isAnimating = false;
-        // Kosongkan center, kunci center+right, buka kiri
         slots = { ...slots, center: null };
         slotLocked = { left: false, center: true, right: true };
         fillOrder = ["left"];
@@ -158,7 +147,6 @@
         activeSlot = "right";
         return;
       }
-      // Jika keduanya terisi tapi salah, fokuskan yang salah
       if (slots.center !== kunci.center) {
         activeSlot = "center";
         return;
@@ -174,15 +162,20 @@
 </script>
 
 <svelte:head>
-  <title>Latihan — Persiapan Animasi</title>
+  <title>Latihan — Persiapan Animasi (2)</title>
   <meta
     name="description"
-    content="Halaman pengantar sebelum latihan dengan animasi."
+    content="Halaman pengantar sebelum latihan dengan animasi (soal kedua)."
   />
   <link
     rel="preload"
     as="image"
     href="/assets/images/backgrounds/bg-latihan-1-2.png"
+  />
+  <!-- Load Baloo 2 font -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap"
   />
 </svelte:head>
 
@@ -192,11 +185,11 @@
   bind:this={containerEl}
 >
   <h1 id="latihan-animasi-title" class="sr-only">
-    Halaman Latihan (Plus Animasi)
+    Halaman Latihan (Plus Animasi) — Soal 2
   </h1>
 
   <div class="sr-only">
-    <p>Gunakan tombol navigasi untuk kembali atau lanjut ke soal pertama.</p>
+    <p>Gunakan tombol navigasi untuk kembali atau lanjut ke soal latihan.</p>
   </div>
 
   <a
@@ -210,10 +203,10 @@
   </a>
 
   <a
-    href="/latihan"
+    href="/example/plus-animasi"
     class="nav-btn previous"
     use:pressable
-    aria-label="Halaman sebelumnya: Tutorial latihan"
+    aria-label="Halaman sebelumnya: Contoh 1 (animasi)"
   >
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>
@@ -222,6 +215,7 @@
   <a
     href="/latihan/1"
     class="nav-btn next"
+    class:glow-blue={showNextGlow}
     use:pressable
     aria-label="Halaman selanjutnya: Soal 1"
   >
@@ -229,10 +223,8 @@
     <span class="sr-only">Halaman selanjutnya</span>
   </a>
 
-  <!-- Kotak kuning untuk area pilihan angka -->
   <div class="yellow-box" aria-hidden="true"></div>
 
-  <!-- Tiga kotak jawaban di atas -->
   <div class="answer-slots" aria-label="Tempat jawaban dipilih">
     <div
       class="slot left"
@@ -269,7 +261,6 @@
     </div>
   </div>
 
-  <!-- Label bantuan: balon petunjuk di kiri-atas area pilihan angka -->
   <img
     class="bubble-choose"
     src="/assets/images/materials/bubble-choose.png"
@@ -278,7 +269,6 @@
     height="120"
   />
 
-  <!-- Palet pilihan angka (bintang) -->
   <div class="number-choose" role="group" aria-label="Pilih jawaban angka">
     {#each numbers as n}
       <button
@@ -327,7 +317,6 @@
     );
     padding-bottom: clamp(1.5rem, 6vw, 3.5rem);
     isolation: isolate;
-    /* Variabel posisi dan ukuran agar presisi lintas perangkat */
     --choose-bottom: clamp(76px, 14vw, 120px);
     --gap: clamp(8px, 2vw, 14px);
     --star-size: clamp(56px, 14vw, 92px);
@@ -335,7 +324,6 @@
     --box-height: calc(var(--star-size) * 2 + var(--gap));
   }
 
-  /* Kotak kuning sebagai latar pilihan angka */
   .yellow-box {
     position: absolute;
     left: 50%;
@@ -350,8 +338,6 @@
     z-index: 1;
   }
 
-  /* Area bintang: diposisikan agar masuk ke kotak kuning di BG.
-     Nilai offset menggunakan clamp agar konsisten di berbagai perangkat. */
   .number-choose {
     position: absolute;
     bottom: var(--choose-bottom);
@@ -368,7 +354,6 @@
     z-index: 2;
   }
 
-  /* Tiga kotak jawaban di atas area kuning */
   .answer-slots {
     position: absolute;
     left: clamp(12px, 6vw, 28px);
@@ -416,15 +401,16 @@
     width: 100%;
     height: 100%;
     font-family:
-      "Kalam",
+      "Baloo 2",
       system-ui,
       -apple-system,
       sans-serif;
-    font-weight: 700;
-    font-size: clamp(3rem, 12vw, 4.5rem);
+    font-weight: 800;
+    font-size: clamp(5rem, 12.5vw, 5rem);
     color: #0b1220;
     line-height: 1;
     user-select: none;
+    overflow: hidden;
   }
 
   .digit-hidden .slot-digit {
@@ -433,22 +419,20 @@
 
   :global(.flying-digit) {
     font-family:
-      "Kalam",
+      "Baloo 2",
       system-ui,
       -apple-system,
       sans-serif;
-    font-weight: 700;
-    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 800;
+    font-size: clamp(100px, 11vw, 132px);
     color: #0b1220;
     text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 5;
   }
 
-  /* Balon petunjuk di kiri-atas kotak kuning (menunjuk grid angka) */
   .bubble-choose {
     position: absolute;
-    /* Tautkan ke pojok kiri-atas kotak kuning */
     left: calc(45% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
     bottom: calc(
       var(--choose-bottom) + var(--box-height) - clamp(50px, 1vw, 12px)
@@ -460,7 +444,6 @@
     user-select: none;
   }
 
-  /* Ekspresi benar (overlay) */
   .correct-expression {
     position: absolute;
     left: 50%;
@@ -491,7 +474,7 @@
     border: 0;
     padding: 0;
     width: var(--star-size);
-    aspect-ratio: 1 / 1; /* jaga proporsi dalam grid */
+    aspect-ratio: 1 / 1;
     display: grid;
     place-items: center;
     transition:

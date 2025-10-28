@@ -72,7 +72,7 @@
 
   <a
     href="/example"
-    class="nav-btn next"
+    class="nav-btn next glow-blue"
     use:pressable
     class:is-hidden={!showNav}
     aria-label="Halaman selanjutnya: Contoh"

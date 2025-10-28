@@ -7,10 +7,10 @@
   const srcFor = (n) => `/assets/images/number-choose/${n}.png`;
 
   // Konfigurasi animasi (ubah angka ini untuk atur kecepatan/feel)
-  const ANIM_UP_DURATION = 4; // detik tahap naik
-  const ANIM_LEFT_DURATION = 2; // detik tahap belok kiri
-  const ANIM_UP_SPRING = { stiffness: 180, damping: 28 };
-  const ANIM_LEFT_SPRING = { stiffness: 180, damping: 28 };
+  const ANIM_UP_DURATION = 7; // detik tahap naik
+  const ANIM_LEFT_DURATION = 4; // detik tahap belok kiri
+  const ANIM_UP_SPRING = { stiffness: 30, damping: 14 };
+  const ANIM_LEFT_SPRING = { stiffness: 50, damping: 14 };
 
   // State slot jawaban. Urutan awal: tengah -> kanan. (kiri akan dibuka setelah benar)
   let slots = { left: null, center: null, right: null };
@@ -25,7 +25,7 @@
   let centerSlotEl;
   let isAnimating = false;
   let firstStageDone = false;
-  const DISABLED = true; // halaman ini hanya untuk gambaran; nonaktifkan aksi
+  $: showNextGlow = firstStageDone && slots.left === 2;
   $: crCorrect =
     slots.center !== null &&
     slots.right !== null &&
@@ -44,7 +44,6 @@
   }
 
   function handlePick(n) {
-    if (DISABLED) return;
     if (isAnimating) return;
     let target = null;
     if (activeSlot && !slotLocked[activeSlot]) {
@@ -91,9 +90,9 @@
       top: `${startY}px`,
       transform: "translate(-50%, -50%)",
       zIndex: 50,
-      fontSize: "clamp(64px, 10vw, 120px)",
-      fontFamily: "Kalam, system-ui, -apple-system, sans-serif",
-      fontWeight: "700",
+      fontSize: "clamp(100px, 11vw, 132px)",
+      fontFamily: "'Baloo 2', system-ui, -apple-system, sans-serif",
+      fontWeight: "800",
     });
     containerEl.appendChild(el);
 
@@ -146,7 +145,6 @@
   }
 
   function setActive(slot) {
-    if (DISABLED) return;
     if (slotLocked[slot]) return;
     activeSlot = slot;
   }
@@ -187,12 +185,15 @@
     as="image"
     href="/assets/images/backgrounds/bg-latihan-1-2.png"
   />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap"
+  />
 </svelte:head>
 
 <section
-  class="latihan-animasi-screen is-disabled"
+  class="latihan-animasi-screen"
   aria-labelledby="latihan-animasi-title"
-  aria-disabled="true"
   bind:this={containerEl}
 >
   <h1 id="latihan-animasi-title" class="sr-only">
@@ -217,17 +218,18 @@
     href="/example"
     class="nav-btn previous"
     use:pressable
-    aria-label="Halaman sebelumnya: Tentang"
+    aria-label="Halaman sebelumnya: Contoh"
   >
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>
   </a>
 
   <a
-    href="/example/plus-animasi"
-    class="nav-btn next glow-blue"
+    href="/example/plus-animasi/2"
+    class="nav-btn next"
+    class:glow-blue={showNextGlow}
     use:pressable
-    aria-label="Halaman selanjutnya: Contoh plus animasi"
+    aria-label="Halaman selanjutnya: Contoh 2 (animasi)"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
@@ -276,7 +278,7 @@
   <!-- Label bantuan: balon petunjuk di kiri-atas area pilihan angka -->
   <img
     class="bubble-choose"
-    src="/assets/images/materials/bubble-count.png"
+    src="/assets/images/materials/bubble-choose.png"
     alt="Pilih jawaban yang benar"
     width="320"
     height="120"
@@ -372,13 +374,6 @@
     z-index: 2;
   }
 
-  /* Nonaktifkan aksi pada halaman gambaran */
-  .is-disabled .answer-slots,
-  .is-disabled .number-choose {
-    pointer-events: none;
-    filter: grayscale(0.2) opacity(0.95);
-  }
-
   /* Tiga kotak jawaban di atas area kuning */
   .answer-slots {
     position: absolute;
@@ -427,15 +422,16 @@
     width: 100%;
     height: 100%;
     font-family:
-      "Kalam",
+      "Baloo 2",
       system-ui,
       -apple-system,
       sans-serif;
-    font-weight: 700;
-    font-size: clamp(5rem, 12vw, 5rem);
+    font-weight: 800;
+    font-size: clamp(5rem, 12.5vw, 5rem);
     color: #0b1220;
     line-height: 1;
     user-select: none;
+    overflow: hidden;
   }
 
   .digit-hidden .slot-digit {
@@ -444,12 +440,12 @@
 
   :global(.flying-digit) {
     font-family:
-      "Kalam",
+      "Baloo 2",
       system-ui,
       -apple-system,
       sans-serif;
-    font-weight: 700;
-    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 800;
+    font-size: clamp(100px, 11vw, 132px);
     color: #0b1220;
     text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
     pointer-events: none;
@@ -459,8 +455,11 @@
   /* Balon petunjuk di kiri-atas kotak kuning (menunjuk grid angka) */
   .bubble-choose {
     position: absolute;
-    top: 4%;
-    right: 20%;
+    /* Tautkan ke pojok kiri-atas kotak kuning */
+    left: calc(45% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    bottom: calc(
+      var(--choose-bottom) + var(--box-height) - clamp(50px, 1vw, 12px)
+    );
     width: clamp(140px, 36vw, 220px);
     height: auto;
     z-index: 3;

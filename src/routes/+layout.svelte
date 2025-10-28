@@ -2,7 +2,7 @@
   import '../app.css';
   export let data;
   import { page } from '$app/stores';
-  const fullBleedRoutes = new Set(['/', '/petunjuk', '/about', '/example', '/latihan', '/latihan/plus-animasi']);
+  const fullBleedRoutes = new Set(['/', '/petunjuk', '/about', '/example', '/latihan', '/example/plus-animasi', '/example/plus-animasi/2']);
   $: pathname = $page.url.pathname;
   $: isFullBleed = fullBleedRoutes.has(pathname);
 </script>
@@ -19,3 +19,19 @@
     <slot />
   </main>
 </div>
+
+<style>
+  /* Global blue glow animation for call-to-action buttons */
+  :global(.glow-blue img) {
+    animation: glow-blue 1.6s ease-in-out infinite;
+  }
+
+  @keyframes glow-blue {
+    0%, 100% {
+      filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0));
+    }
+    50% {
+      filter: drop-shadow(0 0 18px rgba(37, 99, 235, 0.85)) brightness(1.05);
+    }
+  }
+</style>

@@ -18,7 +18,7 @@
 <section class="overflow-hidden p-0">
   <div class="home-hero">
     <button
-      class="play-cta"
+      class="play-cta glow-blue"
       use:pressable
       bind:this={playBtn}
       aria-label="Mulai"

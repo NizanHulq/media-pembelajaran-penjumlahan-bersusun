@@ -1,11 +1,18 @@
 <script>
-  import { pressable } from '$lib/actions/pressable';
+  import { pressable } from "$lib/actions/pressable";
 </script>
 
 <svelte:head>
   <title>Contoh</title>
-  <meta name="description" content="Halaman contoh interaksi sebelum latihan." />
-  <link rel="preload" as="image" href="/assets/images/backgrounds/bg-example.png" />
+  <meta
+    name="description"
+    content="Halaman contoh interaksi sebelum latihan."
+  />
+  <link
+    rel="preload"
+    as="image"
+    href="/assets/images/backgrounds/bg-example.png"
+  />
 </svelte:head>
 
 <section class="example-screen" aria-labelledby="example-title">
@@ -36,10 +43,10 @@
   </a>
 
   <a
-    href="/latihan"
-    class="nav-btn next"
+    href="/example/plus-animasi"
+    class="nav-btn next glow-blue"
     use:pressable
-    aria-label="Halaman selanjutnya: Latihan (Tutorial)"
+    aria-label="Halaman selanjutnya: Contoh plus animasi"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
@@ -54,11 +61,18 @@
     justify-content: center;
     min-height: 100dvh;
     background:
-      url('/assets/images/backgrounds/bg-example.png') top center / 100% 100% no-repeat,
+      url("/assets/images/backgrounds/bg-example.png") top center / 100% 100%
+        no-repeat,
       linear-gradient(180deg, #e6eaff 0%, #dbe6ff 100%);
     padding: clamp(1rem, 4vw, 3rem);
-    padding-left: max(env(safe-area-inset-left, 0px), clamp(1rem, 4vw, 2.75rem));
-    padding-right: max(env(safe-area-inset-right, 0px), clamp(1rem, 4vw, 2.75rem));
+    padding-left: max(
+      env(safe-area-inset-left, 0px),
+      clamp(1rem, 4vw, 2.75rem)
+    );
+    padding-right: max(
+      env(safe-area-inset-right, 0px),
+      clamp(1rem, 4vw, 2.75rem)
+    );
     padding-bottom: clamp(1.5rem, 6vw, 3.5rem);
     isolation: isolate;
   }
@@ -132,4 +146,3 @@
     border: 0;
   }
 </style>
-
