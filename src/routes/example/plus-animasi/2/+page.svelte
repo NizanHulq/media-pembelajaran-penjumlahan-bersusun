@@ -264,7 +264,7 @@
       class:locked={slotLocked.left}
       on:click={() => setActive("left")}
     >
-      <span class="slot-digit digit-display digit-3d">{slots.left ?? ""}</span>
+      <span class="slot-digit digit-display digit-3d" style="color: #ef4444">{slots.left ?? ""}</span>
     </div>
     <div
       class="slot center"

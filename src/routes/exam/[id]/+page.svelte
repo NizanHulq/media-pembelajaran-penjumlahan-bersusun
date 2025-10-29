@@ -286,12 +286,12 @@
   <!-- Slots (no bubble images for exam) -->
   <div class="answer-slots" aria-label="Tempat jawaban dipilih">
     <div class="slot left" class:active={activeSlot === "left"} class:locked={slotLocked.left} on:click={() => setActive("left")}>
-      <span class="slot-digit digit-display digit-3d">{slots.left ?? ""}</span>
+      <span class="slot-digit digit-display digit-3d" style="color: #ef4444">{slots.left ?? ""}</span>
     </div>
     <div class="slot center" bind:this={centerSlotEl} class:active={activeSlot === "center"} class:locked={slotLocked.center} on:click={() => setActive("center")}>
       <span class="slot-digit digit-display digit-3d" style="color: {crCorrect ? '#2563eb' : '#0b1220'}">{slots.center ?? ""}</span>
     </div>
-    <div class="slot right" class:active={activeSlot === "right"} class:locked={slotLocked.right} on:click={() => setActive("right")}>
+    <div class="slot right" class:active={activeSlot === "right"} class:locked={slotLocked.right} on:click={() => setActive("right")}>        
       <span class="slot-digit digit-display digit-3d" style="color: {rightBlue ? '#2563eb' : '#0b1220'}">{slots.right ?? ""}</span>
     </div>
   </div>
