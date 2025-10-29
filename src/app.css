@@ -114,3 +114,24 @@ html {
   }
   .play-cta { width: clamp(72px, 18vh, 140px); }
 }
+/* Global numeric display for exam/example digits to stay consistent */
+:root {
+  --digit-font-family: 'Baloo 2', system-ui, -apple-system, sans-serif;
+  --digit-font-weight: 800;
+}
+
+.digit-display {
+  font-family: var(--digit-font-family);
+  font-weight: var(--digit-font-weight);
+}
+
+/* Fun 3D/timbul style for digits used in slots and flying numbers */
+.digit-3d {
+  /* subtle white top highlight + stacked shadow for extrusion */
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.35),
+    0 2px 0 rgba(11,18,32,0.12),
+    0 3px 0 rgba(11,18,32,0.12),
+    0 4px 0 rgba(11,18,32,0.12),
+    0 6px 10px rgba(2,6,23,0.22);
+}

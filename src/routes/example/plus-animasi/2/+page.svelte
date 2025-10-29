@@ -1,6 +1,8 @@
 <script>
   import { pressable } from "$lib/actions/pressable";
   import { animate, spring } from "motion";
+  import { goto } from "$app/navigation";
+  import { kunciPlusAnimasi2 } from "$lib/kunci/plus-animasi";
 
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   const srcFor = (n) => `/assets/images/number-choose/${n}.png`;
@@ -12,16 +14,20 @@
 
   let slots = { left: null, center: null, right: null };
   let fillOrder = ["center", "right"];
-  let slotLocked = { left: true, center: false, right: false };
+  // Step 1: semua terkunci. Step 2: center+right. Step 3: kiri.
+  let slotLocked = { left: true, center: true, right: true };
   let activeSlot = "center";
+  let step = 1; // 1=blue, 2=choose & isi C/R, 3=red & isi L, 4=selesai
 
-  // Placeholder kunci; akan disesuaikan kemudian
-  let kunci = { center: 1, right: 0 };
+  // Kunci jawaban menyeluruh (left, center, right) untuk halaman 2
+  const kunci = kunciPlusAnimasi2;
 
   let containerEl;
   let centerSlotEl;
   let isAnimating = false;
   let firstStageDone = false;
+  $: canNavigate = firstStageDone && slots.left === kunci.left;
+  $: nextGlow = step === 1 || canNavigate;
   $: crCorrect =
     slots.center !== null &&
     slots.right !== null &&
@@ -31,7 +37,17 @@
   $: rightBlue =
     (slots.center === kunci.center && slots.right === kunci.right) ||
     firstStageDone;
-  $: showNextGlow = firstStageDone && slots.left === 2;
+  $: showBubbleBlue = step === 1;
+  $: showBubbleChoose = step === 2 && !firstStageDone;
+  $: showBubbleRed = firstStageDone && step >= 3 && slots.left !== kunci.left;
+
+  let showWrong = false;
+  let wrongTimer;
+  function popWrong() {
+    showWrong = true;
+    clearTimeout(wrongTimer);
+    wrongTimer = setTimeout(() => (showWrong = false), 1200);
+  }
 
   function nextTargetSlot() {
     for (const key of fillOrder) {
@@ -42,6 +58,7 @@
 
   function handlePick(n) {
     if (isAnimating) return;
+    if (step === 1) return;
     let target = null;
     if (activeSlot && !slotLocked[activeSlot]) {
       target = activeSlot;
@@ -50,8 +67,17 @@
     }
     if (!target) return;
     slots = { ...slots, [target]: n };
+    if (!firstStageDone && (target === "center" || target === "right")) {
+      if (n !== kunci[target]) popWrong();
+    }
+    if (firstStageDone && target === "left") {
+      if (n !== kunci.left) popWrong();
+    }
     maybeAnimateIfCorrect();
     updateActiveSuggestion();
+    if (firstStageDone && target === "left" && n === kunci.left) {
+      step = Math.max(step, 4);
+    }
   }
 
   function maybeAnimateIfCorrect() {
@@ -77,7 +103,7 @@
     const startY = slotRect.top - containerRect.top + slotRect.height / 2;
 
     const el = document.createElement("div");
-    el.className = "flying-digit";
+    el.className = "flying-digit digit-display digit-3d";
     el.textContent = String(slots.center);
     Object.assign(el.style, {
       position: "absolute",
@@ -86,8 +112,6 @@
       transform: "translate(-50%, -50%)",
       zIndex: 50,
       fontSize: "clamp(100px, 11vw, 132px)",
-      fontFamily: "'Baloo 2', system-ui, -apple-system, sans-serif",
-      fontWeight: "800",
     });
     containerEl.appendChild(el);
 
@@ -127,6 +151,7 @@
         slotLocked = { left: false, center: true, right: true };
         fillOrder = ["left"];
         activeSlot = "left";
+        step = Math.max(step, 3);
         updateActiveSuggestion();
       });
     });
@@ -170,12 +195,7 @@
   <link
     rel="preload"
     as="image"
-    href="/assets/images/backgrounds/bg-latihan-1-2.png"
-  />
-  <!-- Load Baloo 2 font -->
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap"
+    href="/assets/images/backgrounds/bg-latihan-1-3.png"
   />
 </svelte:head>
 
@@ -203,7 +223,7 @@
   </a>
 
   <a
-    href="/example/plus-animasi"
+    href="/example/plus-animasi/1"
     class="nav-btn previous"
     use:pressable
     aria-label="Halaman sebelumnya: Contoh 1 (animasi)"
@@ -213,11 +233,23 @@
   </a>
 
   <a
-    href="/latihan/1"
+    href="/exam"
     class="nav-btn next"
-    class:glow-blue={showNextGlow}
+    class:glow-blue={nextGlow}
+    on:click|preventDefault={() => {
+      if (step === 1) {
+        step = 2;
+        slotLocked = { left: true, center: false, right: false };
+        fillOrder = ["center", "right"];
+        activeSlot = "center";
+        return;
+      }
+      if (canNavigate) {
+        goto("/exam");
+      }
+    }}
     use:pressable
-    aria-label="Halaman selanjutnya: Soal 1"
+    aria-label="Halaman selanjutnya: Exam"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
@@ -232,7 +264,7 @@
       class:locked={slotLocked.left}
       on:click={() => setActive("left")}
     >
-      <span class="slot-digit">{slots.left ?? ""}</span>
+      <span class="slot-digit digit-display digit-3d">{slots.left ?? ""}</span>
     </div>
     <div
       class="slot center"
@@ -242,7 +274,7 @@
       on:click={() => setActive("center")}
     >
       <span
-        class="slot-digit"
+        class="slot-digit digit-display digit-3d"
         style="color: {crCorrect ? '#2563eb' : '#0b1220'}"
         >{slots.center ?? ""}</span
       >
@@ -254,20 +286,40 @@
       on:click={() => setActive("right")}
     >
       <span
-        class="slot-digit"
+        class="slot-digit digit-display digit-3d"
         style="color: {rightBlue ? '#2563eb' : '#0b1220'}"
         >{slots.right ?? ""}</span
       >
     </div>
   </div>
 
-  <img
-    class="bubble-choose"
-    src="/assets/images/materials/bubble-choose.png"
-    alt="Pilih jawaban yang benar"
-    width="320"
-    height="120"
-  />
+  {#if showBubbleBlue}
+    <img
+      class="bubble-blue"
+      src="/assets/images/materials/bubble-count-blue.png"
+      alt="Hitung biru"
+      width="320"
+      height="120"
+    />
+  {/if}
+  {#if showBubbleChoose}
+    <img
+      class="bubble-choose"
+      src="/assets/images/materials/bubble-choose.png"
+      alt="Pilih jawaban yang benar"
+      width="320"
+      height="120"
+    />
+  {/if}
+  {#if showBubbleRed}
+    <img
+      class="bubble-red"
+      src="/assets/images/materials/bubble-count-red.png"
+      alt="Hitung merah"
+      width="320"
+      height="120"
+    />
+  {/if}
 
   <div class="number-choose" role="group" aria-label="Pilih jawaban angka">
     {#each numbers as n}
@@ -284,7 +336,13 @@
     {/each}
   </div>
 
-  {#if firstStageDone && slots.left === 2}
+  {#if showWrong}
+    <div class="wrong-toast" role="alert" aria-live="assertive">
+      ❌ Jawaban salah
+    </div>
+  {/if}
+
+  {#if firstStageDone && slots.left === kunci.left}
     <img
       class="correct-expression"
       src="/assets/images/materials/correct-expression.png"
@@ -303,7 +361,7 @@
     justify-content: center;
     min-height: 100dvh;
     background:
-      url("/assets/images/backgrounds/bg-latihan-1-2.png") top center / 100%
+      url("/assets/images/backgrounds/bg-latihan-1-3.png") top center / 100%
         100% no-repeat,
       linear-gradient(180deg, #e6eaff 0%, #dbe6ff 100%);
     padding: clamp(1rem, 4vw, 3rem);
@@ -418,15 +476,8 @@
   }
 
   :global(.flying-digit) {
-    font-family:
-      "Baloo 2",
-      system-ui,
-      -apple-system,
-      sans-serif;
-    font-weight: 800;
     font-size: clamp(100px, 11vw, 132px);
     color: #0b1220;
-    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 5;
   }
@@ -437,6 +488,28 @@
     bottom: calc(
       var(--choose-bottom) + var(--box-height) - clamp(50px, 1vw, 12px)
     );
+    width: clamp(140px, 36vw, 220px);
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .bubble-blue {
+    position: absolute;
+    right: calc(60% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    top: 4vh;
+    width: clamp(140px, 36vw, 220px);
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .bubble-red {
+    position: absolute;
+    left: calc(60% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    top: 4vh;
     width: clamp(140px, 36vw, 220px);
     height: auto;
     z-index: 3;
@@ -548,6 +621,21 @@
   .nav-btn.next {
     bottom: clamp(1.25rem, 4vw, 3rem);
     right: clamp(1rem, 4vw, 2.75rem);
+  }
+
+  .wrong-toast {
+    position: absolute;
+    left: 50%;
+    top: clamp(1rem, 6vh, 3.5rem);
+    transform: translateX(-50%);
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 2px solid #ef4444;
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 800;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
+    z-index: 20;
   }
 
   @media (max-width: 640px) {

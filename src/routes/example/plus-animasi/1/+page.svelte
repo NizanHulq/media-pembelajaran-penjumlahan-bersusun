@@ -1,31 +1,37 @@
 <script>
   import { pressable } from "$lib/actions/pressable";
   import { animate, spring } from "motion";
+  import { goto } from "$app/navigation";
+  import { kunciPlusAnimasi1 } from "$lib/kunci/plus-animasi";
 
   // Pilihan angka 1–9 dan 0
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
   const srcFor = (n) => `/assets/images/number-choose/${n}.png`;
 
   // Konfigurasi animasi (ubah angka ini untuk atur kecepatan/feel)
-  const ANIM_UP_DURATION = 4; // detik tahap naik
-  const ANIM_LEFT_DURATION = 2; // detik tahap belok kiri
-  const ANIM_UP_SPRING = { stiffness: 180, damping: 28 };
-  const ANIM_LEFT_SPRING = { stiffness: 180, damping: 28 };
+  const ANIM_UP_DURATION = 7; // detik tahap naik
+  const ANIM_LEFT_DURATION = 4; // detik tahap belok kiri
+  const ANIM_UP_SPRING = { stiffness: 30, damping: 14 };
+  const ANIM_LEFT_SPRING = { stiffness: 50, damping: 14 };
 
-  // State slot jawaban. Urutan awal: tengah -> kanan. (kiri akan dibuka setelah benar)
+  // State slot jawaban & langkah (step)
   let slots = { left: null, center: null, right: null };
   let fillOrder = ["center", "right"];
-  let slotLocked = { left: true, center: false, right: false };
+  // Step 1: semua terkunci. Step 2: center+right buka. Step 3: kiri buka.
+  let slotLocked = { left: true, center: true, right: true };
   let activeSlot = "center";
+  let step = 1; // 1=blue, 2=choose & isi C/R, 3=red & isi L, 4=selesai
 
-  // Kunci jawaban: center=1 dan right=0
-  let kunci = { center: 1, right: 0 };
+  // Kunci jawaban menyeluruh (left, center, right) untuk halaman 1
+  const kunci = kunciPlusAnimasi1;
 
   let containerEl;
   let centerSlotEl;
   let isAnimating = false;
   let firstStageDone = false;
-  const DISABLED = true; // halaman ini hanya untuk gambaran; nonaktifkan aksi
+  // Glow next saat masuk (step 1) dan saat selesai (siap pindah halaman)
+  $: canNavigate = firstStageDone && slots.left === kunci.left;
+  $: nextGlow = step === 1 || canNavigate;
   $: crCorrect =
     slots.center !== null &&
     slots.right !== null &&
@@ -35,6 +41,19 @@
   $: rightBlue =
     (slots.center === kunci.center && slots.right === kunci.right) ||
     firstStageDone;
+  // Tampilkan bubble sesuai step
+  $: showBubbleBlue = step === 1; // hanya step 1
+  $: showBubbleChoose = step === 2 && !firstStageDone; // hanya step 2
+  $: showBubbleRed = firstStageDone && step >= 3 && slots.left !== kunci.left;
+
+  // Popup salah
+  let showWrong = false;
+  let wrongTimer;
+  function popWrong() {
+    showWrong = true;
+    clearTimeout(wrongTimer);
+    wrongTimer = setTimeout(() => (showWrong = false), 1200);
+  }
 
   function nextTargetSlot() {
     for (const key of fillOrder) {
@@ -44,8 +63,8 @@
   }
 
   function handlePick(n) {
-    if (DISABLED) return;
     if (isAnimating) return;
+    if (step === 1) return; // belum mulai isi
     let target = null;
     if (activeSlot && !slotLocked[activeSlot]) {
       target = activeSlot;
@@ -54,8 +73,18 @@
     }
     if (!target) return;
     slots = { ...slots, [target]: n };
+    // Feedback salah per-slot
+    if (!firstStageDone && (target === "center" || target === "right")) {
+      if (n !== kunci[target]) popWrong();
+    }
+    if (firstStageDone && target === "left") {
+      if (n !== kunci.left) popWrong();
+    }
     maybeAnimateIfCorrect();
     updateActiveSuggestion();
+    if (firstStageDone && target === "left" && n === kunci.left) {
+      step = Math.max(step, 4);
+    }
   }
 
   function maybeAnimateIfCorrect() {
@@ -83,7 +112,7 @@
 
     // Buat elemen digit terbang (clone visual)
     const el = document.createElement("div");
-    el.className = "flying-digit";
+    el.className = "flying-digit digit-display digit-3d";
     el.textContent = String(slots.center);
     Object.assign(el.style, {
       position: "absolute",
@@ -91,9 +120,7 @@
       top: `${startY}px`,
       transform: "translate(-50%, -50%)",
       zIndex: 50,
-      fontSize: "clamp(64px, 10vw, 120px)",
-      fontFamily: "Kalam, system-ui, -apple-system, sans-serif",
-      fontWeight: "700",
+      fontSize: "clamp(100px, 11vw, 132px)",
     });
     containerEl.appendChild(el);
 
@@ -140,13 +167,13 @@
         slotLocked = { left: false, center: true, right: true };
         fillOrder = ["left"];
         activeSlot = "left";
+        step = Math.max(step, 3);
         updateActiveSuggestion();
       });
     });
   }
 
   function setActive(slot) {
-    if (DISABLED) return;
     if (slotLocked[slot]) return;
     activeSlot = slot;
   }
@@ -190,9 +217,8 @@
 </svelte:head>
 
 <section
-  class="latihan-animasi-screen is-disabled"
+  class="latihan-animasi-screen"
   aria-labelledby="latihan-animasi-title"
-  aria-disabled="true"
   bind:this={containerEl}
 >
   <h1 id="latihan-animasi-title" class="sr-only">
@@ -217,17 +243,30 @@
     href="/example"
     class="nav-btn previous"
     use:pressable
-    aria-label="Halaman sebelumnya: Tentang"
+    aria-label="Halaman sebelumnya: Contoh"
   >
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>
   </a>
 
   <a
-    href="/example/plus-animasi"
-    class="nav-btn next glow-blue"
+    href="/example/plus-animasi/2"
+    class="nav-btn next"
+    class:glow-blue={nextGlow}
+    on:click|preventDefault={() => {
+      if (step === 1) {
+        step = 2;
+        slotLocked = { left: true, center: false, right: false };
+        fillOrder = ["center", "right"];
+        activeSlot = "center";
+        return;
+      }
+      if (canNavigate) {
+        goto("/example/plus-animasi/2");
+      }
+    }}
     use:pressable
-    aria-label="Halaman selanjutnya: Contoh plus animasi"
+    aria-label="Halaman selanjutnya: Contoh 2 (animasi)"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
@@ -244,7 +283,7 @@
       class:locked={slotLocked.left}
       on:click={() => setActive("left")}
     >
-      <span class="slot-digit">{slots.left ?? ""}</span>
+      <span class="slot-digit digit-display digit-3d">{slots.left ?? ""}</span>
     </div>
     <div
       class="slot center"
@@ -254,7 +293,7 @@
       on:click={() => setActive("center")}
     >
       <span
-        class="slot-digit"
+        class="slot-digit digit-display digit-3d"
         style="color: {crCorrect ? '#2563eb' : '#0b1220'}"
         >{slots.center ?? ""}</span
       >
@@ -266,21 +305,41 @@
       on:click={() => setActive("right")}
     >
       <span
-        class="slot-digit"
+        class="slot-digit digit-display digit-3d"
         style="color: {rightBlue ? '#2563eb' : '#0b1220'}"
         >{slots.right ?? ""}</span
       >
     </div>
   </div>
 
-  <!-- Label bantuan: balon petunjuk di kiri-atas area pilihan angka -->
-  <img
-    class="bubble-choose"
-    src="/assets/images/materials/bubble-count.png"
-    alt="Pilih jawaban yang benar"
-    width="320"
-    height="120"
-  />
+  <!-- Bubbles sesuai langkah -->
+  {#if showBubbleBlue}
+    <img
+      class="bubble-blue"
+      src="/assets/images/materials/bubble-count-blue.png"
+      alt="Hitung biru"
+      width="320"
+      height="120"
+    />
+  {/if}
+  {#if showBubbleChoose}
+    <img
+      class="bubble-choose"
+      src="/assets/images/materials/bubble-choose.png"
+      alt="Pilih jawaban yang benar"
+      width="320"
+      height="120"
+    />
+  {/if}
+  {#if showBubbleRed}
+    <img
+      class="bubble-red"
+      src="/assets/images/materials/bubble-count-red.png"
+      alt="Hitung merah"
+      width="320"
+      height="120"
+    />
+  {/if}
 
   <!-- Palet pilihan angka (bintang) -->
   <div class="number-choose" role="group" aria-label="Pilih jawaban angka">
@@ -298,7 +357,13 @@
     {/each}
   </div>
 
-  {#if firstStageDone && slots.left === 2}
+  {#if showWrong}
+    <div class="wrong-toast" role="alert" aria-live="assertive">
+      ❌ Jawaban salah
+    </div>
+  {/if}
+
+  {#if firstStageDone && slots.left === kunci.left}
     <img
       class="correct-expression"
       src="/assets/images/materials/correct-expression.png"
@@ -372,13 +437,6 @@
     z-index: 2;
   }
 
-  /* Nonaktifkan aksi pada halaman gambaran */
-  .is-disabled .answer-slots,
-  .is-disabled .number-choose {
-    pointer-events: none;
-    filter: grayscale(0.2) opacity(0.95);
-  }
-
   /* Tiga kotak jawaban di atas area kuning */
   .answer-slots {
     position: absolute;
@@ -427,15 +485,16 @@
     width: 100%;
     height: 100%;
     font-family:
-      "Kalam",
+      "Baloo 2",
       system-ui,
       -apple-system,
       sans-serif;
-    font-weight: 700;
-    font-size: clamp(5rem, 12vw, 5rem);
+    font-weight: 800;
+    font-size: clamp(5rem, 12.5vw, 5rem);
     color: #0b1220;
     line-height: 1;
     user-select: none;
+    overflow: hidden;
   }
 
   .digit-hidden .slot-digit {
@@ -443,15 +502,8 @@
   }
 
   :global(.flying-digit) {
-    font-family:
-      "Kalam",
-      system-ui,
-      -apple-system,
-      sans-serif;
-    font-weight: 700;
-    font-size: clamp(64px, 10vw, 120px);
+    font-size: clamp(100px, 11vw, 132px);
     color: #0b1220;
-    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 5;
   }
@@ -459,8 +511,35 @@
   /* Balon petunjuk di kiri-atas kotak kuning (menunjuk grid angka) */
   .bubble-choose {
     position: absolute;
-    top: 4%;
-    right: 20%;
+    /* Tautkan ke pojok kiri-atas kotak kuning */
+    left: calc(45% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    bottom: calc(
+      var(--choose-bottom) + var(--box-height) - clamp(50px, 1vw, 12px)
+    );
+    width: clamp(140px, 36vw, 220px);
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Balon biru di sisi kanan (kebalikan posisi bubble-choose) */
+  .bubble-blue {
+    position: absolute;
+    right: calc(60% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    top: 4vh;
+    width: clamp(140px, 36vw, 220px);
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Balon merah di kiri-atas (sisi berlawanan dari biru) */
+  .bubble-red {
+    position: absolute;
+    left: calc(60% - var(--box-width) / 2 - clamp(6px, 1.6vw, 14px));
+    top: 4vh;
     width: clamp(140px, 36vw, 220px);
     height: auto;
     z-index: 3;
@@ -573,6 +652,21 @@
   .nav-btn.next {
     bottom: clamp(1.25rem, 4vw, 3rem);
     right: clamp(1rem, 4vw, 2.75rem);
+  }
+
+  .wrong-toast {
+    position: absolute;
+    left: 50%;
+    top: clamp(1rem, 6vh, 3.5rem);
+    transform: translateX(-50%);
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 2px solid #ef4444;
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 800;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
+    z-index: 20;
   }
 
   @media (max-width: 640px) {

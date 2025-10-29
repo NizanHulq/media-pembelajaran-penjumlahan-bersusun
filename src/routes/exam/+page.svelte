@@ -3,77 +3,53 @@
 </script>
 
 <svelte:head>
-  <title>Contoh</title>
-  <meta
-    name="description"
-    content="Halaman contoh interaksi sebelum latihan."
-  />
-  <link
-    rel="preload"
-    as="image"
-    href="/assets/images/backgrounds/bg-example.png"
-  />
+  <title>Exam</title>
+  <meta name="description" content="Halaman utama exam (latihan soal)." />
+  <link rel="preload" as="image" href="/assets/images/backgrounds/bg-exam.png" />
+  <link rel="preload" as="image" href="/assets/images/buttons/next.png" />
+  <link rel="preload" as="image" href="/assets/images/buttons/previous.png" />
+  <link rel="preload" as="image" href="/assets/images/buttons/button-home.png" />
 </svelte:head>
 
-<section class="example-screen" aria-labelledby="example-title">
-  <h1 id="example-title" class="sr-only">Halaman Contoh</h1>
+<section class="exam-screen" aria-labelledby="exam-title">
+  <h1 id="exam-title" class="sr-only">Halaman Exam</h1>
 
   <div class="sr-only">
-    <p>Halaman ini menampilkan contoh tampilan sebelum masuk ke latihan.</p>
+    <p>Halaman ini menampilkan latar sebelum masuk ke exam (soal pertama).</p>
   </div>
 
-  <a
-    href="/"
-    class="nav-btn home"
-    use:pressable
-    aria-label="Kembali ke halaman utama"
-  >
+  <a href="/" class="nav-btn home" use:pressable aria-label="Kembali ke halaman utama">
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>
   </a>
 
   <a
-    href="/about"
+    href="/example/plus-animasi/2"
     class="nav-btn previous"
     use:pressable
-    aria-label="Halaman sebelumnya: Tentang"
+    aria-label="Halaman sebelumnya: Contoh 2 (animasi)"
   >
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>
   </a>
 
-  <a
-    href="/example/plus-animasi/1"
-    class="nav-btn next glow-blue"
-    use:pressable
-    aria-label="Halaman selanjutnya: Contoh plus animasi"
-  >
+  <a href="/exam/1" class="nav-btn next glow-blue" use:pressable aria-label="Halaman selanjutnya: Soal 1">
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
   </a>
 </section>
 
 <style>
-  .example-screen {
+  .exam-screen {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100dvh;
+    min-height: 100svh;
     background:
-      url("/assets/images/backgrounds/bg-example.png") top center / 100% 100%
-        no-repeat,
+      url("/assets/images/backgrounds/bg-exam.png") top center / 100% 100% no-repeat,
       linear-gradient(180deg, #e6eaff 0%, #dbe6ff 100%);
-    padding: clamp(1rem, 4vw, 3rem);
-    padding-left: max(
-      env(safe-area-inset-left, 0px),
-      clamp(1rem, 4vw, 2.75rem)
-    );
-    padding-right: max(
-      env(safe-area-inset-right, 0px),
-      clamp(1rem, 4vw, 2.75rem)
-    );
-    padding-bottom: clamp(1.5rem, 6vw, 3.5rem);
+    padding: 0;
     isolation: isolate;
   }
 
@@ -86,9 +62,7 @@
     width: calc(var(--btn-size) * 0.6);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition:
-      transform 160ms ease,
-      filter 160ms ease;
+    transition: transform 160ms ease, filter 160ms ease;
   }
 
   .nav-btn img {
@@ -113,20 +87,9 @@
     transition-duration: 90ms;
   }
 
-  .nav-btn.home {
-    top: clamp(1rem, 4vw, 2.75rem);
-    left: clamp(1rem, 4vw, 2.75rem);
-  }
-
-  .nav-btn.previous {
-    bottom: clamp(1.25rem, 4vw, 3rem);
-    left: clamp(1rem, 4vw, 2.75rem);
-  }
-
-  .nav-btn.next {
-    bottom: clamp(1.25rem, 4vw, 3rem);
-    right: clamp(1rem, 4vw, 2.75rem);
-  }
+  .nav-btn.home { top: 12px; left: 12px; }
+  .nav-btn.previous { bottom: 12px; left: 12px; }
+  .nav-btn.next { bottom: 12px; right: 12px; }
 
   @media (max-width: 640px) {
     .nav-btn {

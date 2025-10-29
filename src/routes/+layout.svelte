@@ -2,16 +2,18 @@
   import '../app.css';
   export let data;
   import { page } from '$app/stores';
-  const fullBleedRoutes = new Set(['/', '/petunjuk', '/about', '/example', '/latihan', '/example/plus-animasi', '/example/plus-animasi/2']);
+  const fullBleedRoutes = new Set(['/', '/petunjuk', '/about', '/example', '/exam', '/example/plus-animasi', '/example/plus-animasi/1', '/example/plus-animasi/2']);
   $: pathname = $page.url.pathname;
-  $: isFullBleed = fullBleedRoutes.has(pathname);
+  $: isFullBleed = pathname === '/'
+    || pathname.startsWith('/exam')
+    || fullBleedRoutes.has(pathname);
 </script>
 
 <svelte:head>
-  <!-- Fonts for playful headline and handwritten subtitle -->
+  <!-- Fonts: display (Lilita One), hand (Kalam), and numeric (Baloo 2) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Lilita+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Kalam:wght@400;700&family=Lilita+One&display=swap" rel="stylesheet">
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-b from-sky-50 to-white text-gray-900">
