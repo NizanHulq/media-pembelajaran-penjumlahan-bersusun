@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global highlight box sizing for example pages (reusable across screens) */
+:root {
+  /* BLUE highlight default */
+  --hl-blue-w: 38vw;
+  --hl-blue-h: 36vh;
+  --hl-blue-top: 15vh;
+  --hl-blue-side: 2vw;
+  /* RED highlight default (tuned from example 1) */
+  --hl-red-w: 38vw;
+  --hl-red-h: 26vh;
+  --hl-red-top: 8vh;
+  --hl-red-side: 2vw;
+}
+
+@media (max-width: 360px) {
+  :root {
+    --hl-blue-w: 42vw; --hl-blue-h: 40vh; --hl-blue-top: 10vh; --hl-blue-side: 5vw;
+    --hl-red-w:  42vw; --hl-red-h:  40vh; --hl-red-top:  10vh; --hl-red-side:  5vw;
+  }
+}
+
+@media (min-width: 480px) {
+  :root {
+    --hl-blue-w: 32vw; --hl-blue-h: 46vh; --hl-blue-top: 12vh; --hl-blue-side: 6vw;
+    --hl-red-w:  32vw; --hl-red-h:  46vh; --hl-red-top:  12vh; --hl-red-side:  6vw;
+  }
+}
+
 /* Utility for "timbul/emboss" look */
 .emboss {
   filter: drop-shadow(0 2px 0 rgba(0,0,0,0.25)) drop-shadow(0 4px 6px rgba(0,0,0,0.15));

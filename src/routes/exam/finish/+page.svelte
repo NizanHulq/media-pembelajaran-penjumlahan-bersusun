@@ -14,8 +14,8 @@
   const REVEAL_SPLIT = 0.4; // when to trigger fireworks (fraction of YAY_DURATION)
 
   function playAgain() {
-    // same destination as the cover Play button
-    goto("/petunjuk");
+    // change: direct back to Menu
+    goto("/menu");
   }
 
   onMount(() => {
@@ -90,20 +90,28 @@
       alt=""
     />
     <div class="fireworks" bind:this={fireworksEl} aria-hidden="true">
-      <img class="fw fw-a" src="/assets/images/materials/finish/fireworks.png" alt="" />
-      <img class="fw fw-b" src="/assets/images/materials/finish/fireworks.png" alt="" />
+      <img
+        class="fw fw-a"
+        src="/assets/images/materials/finish/fireworks.png"
+        alt=""
+      />
+      <img
+        class="fw fw-b"
+        src="/assets/images/materials/finish/fireworks.png"
+        alt=""
+      />
     </div>
   </div>
 
-  <!-- Small Play Again button bottom-center -->
+  <!-- Small Menu button on top-right -->
   <button
     class="play-again glow-blue"
     use:pressable
     on:click={playAgain}
-    aria-label="Main lagi"
+    aria-label="Kembali ke Menu"
   >
-    <img src="/assets/images/buttons/button-play-home.png" alt="" />
-    <span class="sr-only">Main lagi</span>
+    <img src="/assets/images/buttons/menu.png" alt="" />
+    <span class="sr-only">Menu</span>
   </button>
 </section>
 
@@ -178,12 +186,31 @@
     transform: translateZ(0) scale(0.98);
     animation: fw-pulse 2.8s ease-in-out infinite;
   }
-  .fireworks .fw-a { animation-duration: 2.8s; animation-delay: 0s; }
-  .fireworks .fw-b { animation-duration: 3.6s; animation-delay: -0.8s; opacity: 0.5; }
+  .fireworks .fw-a {
+    animation-duration: 2.8s;
+    animation-delay: 0s;
+  }
+  .fireworks .fw-b {
+    animation-duration: 3.6s;
+    animation-delay: -0.8s;
+    opacity: 0.5;
+  }
   @keyframes fw-pulse {
-    0%   { transform: scale(0.98); opacity: 0.4; filter: drop-shadow(0 0 0 rgba(255,230,120,0)); }
-    50%  { transform: scale(1.04); opacity: 0.9; filter: drop-shadow(0 0 14px rgba(255,230,120,0.8)); }
-    100% { transform: scale(0.98); opacity: 0.4; filter: drop-shadow(0 0 0 rgba(255,230,120,0)); }
+    0% {
+      transform: scale(0.98);
+      opacity: 0.4;
+      filter: drop-shadow(0 0 0 rgba(255, 230, 120, 0));
+    }
+    50% {
+      transform: scale(1.04);
+      opacity: 0.9;
+      filter: drop-shadow(0 0 14px rgba(255, 230, 120, 0.8));
+    }
+    100% {
+      transform: scale(0.98);
+      opacity: 0.4;
+      filter: drop-shadow(0 0 0 rgba(255, 230, 120, 0));
+    }
   }
   /* sparkle effect: perpetual ease-in-out blink + glow */
   .sparkle {
@@ -208,7 +235,7 @@
   }
 
   .play-again {
-    --btn-size: clamp(56px, 10vw, 96px);
+    --btn-size: clamp(70px, 10vw, 96px);
     position: absolute;
     top: clamp(12px, 2.5vw, 20px);
     right: clamp(12px, 2.5vw, 20px);

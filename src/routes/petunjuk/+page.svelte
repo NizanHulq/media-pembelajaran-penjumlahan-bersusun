@@ -19,10 +19,7 @@
     </ol>
   </div>
 
-  <a href="/" class="guide-btn home" aria-label="Kembali ke halaman utama" use:pressable>
-    <img src="/assets/images/buttons/button-home.png" alt="" />
-    <span class="sr-only">Home</span>
-  </a>
+  <!-- Home button dihilangkan sesuai permintaan -->
 
   <a href="/" class="guide-btn previous" aria-label="Halaman sebelumnya: Home" use:pressable>
     <img src="/assets/images/buttons/previous.png" alt="" />
@@ -30,10 +27,10 @@
   </a>
 
   <a
-    href="/about"
+    href="/menu"
     class="guide-btn next glow-blue"
     use:pressable
-    aria-label="Halaman selanjutnya: Tentang"
+    aria-label="Halaman selanjutnya: Menu"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>

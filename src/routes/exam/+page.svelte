@@ -18,16 +18,16 @@
     <p>Halaman ini menampilkan latar sebelum masuk ke exam (soal pertama).</p>
   </div>
 
-  <a href="/" class="nav-btn home" use:pressable aria-label="Kembali ke halaman utama">
+  <a href="/menu" class="nav-btn home" use:pressable aria-label="Kembali ke Menu">
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>
   </a>
 
   <a
-    href="/example/plus-animasi/2"
+    href="/menu"
     class="nav-btn previous"
     use:pressable
-    aria-label="Halaman sebelumnya: Contoh 2 (animasi)"
+    aria-label="Kembali ke Menu"
   >
     <img src="/assets/images/buttons/previous.png" alt="" />
     <span class="sr-only">Halaman sebelumnya</span>

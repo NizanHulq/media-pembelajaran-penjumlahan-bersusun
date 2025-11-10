@@ -255,7 +255,7 @@
 >
   <h1 id="exam-title" class="sr-only">Exam {id}</h1>
 
-  <a href="/" class="nav-btn home" use:pressable aria-label="Kembali ke halaman utama">
+  <a href="/menu" class="nav-btn home" use:pressable aria-label="Kembali ke Menu">
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>
   </a>

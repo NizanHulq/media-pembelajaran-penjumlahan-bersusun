@@ -2,7 +2,7 @@
   import '../app.css';
   export let data;
   import { page } from '$app/stores';
-  const fullBleedRoutes = new Set(['/', '/petunjuk', '/about', '/example', '/exam', '/example/plus-animasi', '/example/plus-animasi/1', '/example/plus-animasi/2']);
+  const fullBleedRoutes = new Set(['/', '/petunjuk', '/menu', '/about', '/example', '/exam', '/example/plus-animasi', '/example/plus-animasi/1', '/example/plus-animasi/2']);
   $: pathname = $page.url.pathname;
   $: isFullBleed = pathname === '/'
     || pathname.startsWith('/exam')

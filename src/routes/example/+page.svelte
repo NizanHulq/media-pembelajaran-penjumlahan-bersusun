@@ -23,10 +23,10 @@
   </div>
 
   <a
-    href="/"
+    href="/menu"
     class="nav-btn home"
     use:pressable
-    aria-label="Kembali ke halaman utama"
+    aria-label="Kembali ke Menu"
   >
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>

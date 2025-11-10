@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-  <title>Tentang Media</title>
+  <title>Tujuan Pembelajaran</title>
 </svelte:head>
 
 <section class="about-screen" aria-labelledby="about-title" on:pointerdown={handlePointerDown}>
@@ -44,44 +44,21 @@
     <p>Halaman ini menampilkan informasi tentang media pembelajaran berhitung yang sedang kamu gunakan.</p>
   </div>
 
+  
+
   <a
-    href="/"
-    class="nav-btn home"
+    href="/menu"
+    class="nav-btn home-bottom"
     use:pressable
     class:is-hidden={!showNav}
-    aria-label="Kembali ke halaman utama"
+    aria-label="Kembali ke Menu"
     aria-hidden={!showNav}
     tabindex={showNav ? undefined : -1}
   >
     <img src="/assets/images/buttons/button-home.png" alt="" />
-    <span class="sr-only">Home</span>
+    <span class="sr-only">Menu</span>
   </a>
 
-  <a
-    href="/petunjuk"
-    class="nav-btn previous"
-    use:pressable
-    class:is-hidden={!showNav}
-    aria-label="Halaman sebelumnya: Petunjuk"
-    aria-hidden={!showNav}
-    tabindex={showNav ? undefined : -1}
-  >
-    <img src="/assets/images/buttons/previous.png" alt="" />
-    <span class="sr-only">Halaman sebelumnya</span>
-  </a>
-
-  <a
-    href="/example"
-    class="nav-btn next glow-blue"
-    use:pressable
-    class:is-hidden={!showNav}
-    aria-label="Halaman selanjutnya: Contoh"
-    aria-hidden={!showNav}
-    tabindex={showNav ? undefined : -1}
-  >
-    <img src="/assets/images/buttons/next.png" alt="" />
-    <span class="sr-only">Halaman selanjutnya</span>
-  </a>
 </section>
 
 <style>
@@ -146,19 +123,10 @@
     pointer-events: none;
   }
 
-  .nav-btn.home {
-    top: clamp(1rem, 4vw, 2.75rem);
-    left: clamp(1rem, 4vw, 2.75rem);
-  }
-
-  .nav-btn.previous {
+  .nav-btn.home-bottom {
     bottom: clamp(1.25rem, 4vw, 3rem);
-    left: clamp(1rem, 4vw, 2.75rem);
-  }
-
-  .nav-btn.next {
-    bottom: clamp(1.25rem, 4vw, 3rem);
-    right: clamp(1rem, 4vw, 2.75rem);
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   @media (max-width: 640px) {

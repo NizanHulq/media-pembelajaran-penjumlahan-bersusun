@@ -37,7 +37,9 @@
   $: rightBlue =
     (slots.center === kunci.center && slots.right === kunci.right) ||
     firstStageDone;
-  $: showBubbleBlue = step === 1;
+  $: showBubbleBlue = step === 1; // balon biru hanya di awal
+  // Kotak highlight biru tetap muncul sampai center & right benar
+  $: showHighlightBlue = step === 1 || (step === 2 && !crCorrect);
   $: showBubbleChoose = step === 2 && !firstStageDone;
   $: showBubbleRed = firstStageDone && step >= 3 && slots.left !== kunci.left;
 
@@ -213,10 +215,10 @@
   </div>
 
   <a
-    href="/"
+    href="/menu"
     class="nav-btn home"
     use:pressable
-    aria-label="Kembali ke halaman utama"
+    aria-label="Kembali ke Menu"
   >
     <img src="/assets/images/buttons/button-home.png" alt="" />
     <span class="sr-only">Home</span>
@@ -233,7 +235,7 @@
   </a>
 
   <a
-    href="/exam"
+    href="/menu"
     class="nav-btn next"
     class:glow-blue={nextGlow}
     on:click|preventDefault={() => {
@@ -245,11 +247,11 @@
         return;
       }
       if (canNavigate) {
-        goto("/exam");
+        goto("/menu");
       }
     }}
     use:pressable
-    aria-label="Halaman selanjutnya: Exam"
+    aria-label="Halaman selanjutnya: Menu"
   >
     <img src="/assets/images/buttons/next.png" alt="" />
     <span class="sr-only">Halaman selanjutnya</span>
@@ -264,7 +266,9 @@
       class:locked={slotLocked.left}
       on:click={() => setActive("left")}
     >
-      <span class="slot-digit digit-display digit-3d" style="color: #ef4444">{slots.left ?? ""}</span>
+      <span class="slot-digit digit-display digit-3d" style="color: #ef4444"
+        >{slots.left ?? ""}</span
+      >
     </div>
     <div
       class="slot center"
@@ -302,6 +306,9 @@
       height="120"
     />
   {/if}
+  {#if showHighlightBlue}
+    <div class="highlight-box highlight-blue" aria-hidden="true"></div>
+  {/if}
   {#if showBubbleChoose}
     <img
       class="bubble-choose"
@@ -319,6 +326,7 @@
       width="320"
       height="120"
     />
+    <div class="highlight-box highlight-red" aria-hidden="true"></div>
   {/if}
 
   <div class="number-choose" role="group" aria-label="Pilih jawaban angka">
@@ -380,6 +388,27 @@
     --star-size: clamp(56px, 14vw, 92px);
     --box-width: calc(var(--star-size) * 5 + var(--gap) * 4);
     --box-height: calc(var(--star-size) * 2 + var(--gap));
+    /* Highlight sizing variables (viewport-based) */
+    /* Use global defaults (from app.css) so Example 2 matches Example 1 */
+    --blue-w: var(--hl-blue-w);
+    --blue-h: var(--hl-blue-h);
+    --blue-top: var(--hl-blue-top);
+    --blue-side: var(--hl-blue-side);
+    --red-w: var(--hl-red-w);
+    --red-h: var(--hl-red-h);
+    --red-top: var(--hl-red-top);
+    --red-side: var(--hl-red-side);
+  }
+
+  @media (max-width: 360px) {
+    .latihan-animasi-screen {
+      /* inherit from :root (app.css) */
+    }
+  }
+  @media (min-width: 480px) {
+    .latihan-animasi-screen {
+      /* inherit from :root (app.css) */
+    }
   }
 
   .yellow-box {
@@ -512,9 +541,71 @@
     top: 4vh;
     width: clamp(140px, 36vw, 220px);
     height: auto;
-    z-index: 3;
+    z-index: 10;
     pointer-events: none;
     user-select: none;
+  }
+
+  /* Highlight boxes synced with bubble visibility */
+  .highlight-box {
+    position: absolute;
+    border-radius: clamp(14px, 2.8vw, 22px);
+    pointer-events: none;
+    animation: box-pop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    background: transparent; /* rely on soft halo */
+    z-index: 5;
+  }
+  .highlight-blue {
+    right: var(--blue-side);
+    top: var(--blue-top);
+    width: var(--blue-w);
+    height: var(--blue-h);
+    --glow-color: 37, 99, 235; /* rgb */
+  }
+  .highlight-red {
+    left: var(--red-side);
+    top: var(--red-top);
+    width: var(--red-w);
+    height: var(--red-h);
+    --glow-color: 239, 68, 68; /* rgb */
+  }
+  /* Soft halo like the Next button, using drop-shadow */
+  .highlight-box::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    border: 6px solid rgba(var(--glow-color), 0.8);
+    background: transparent;
+    filter: drop-shadow(0 0 10px rgba(var(--glow-color), 0.35))
+      drop-shadow(0 0 28px rgba(var(--glow-color), 0.25));
+    opacity: 0.75;
+    animation: area-glow 1.6s ease-in-out infinite 120ms;
+  }
+  @keyframes area-glow {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 10px rgba(var(--glow-color), 0.35))
+        drop-shadow(0 0 28px rgba(var(--glow-color), 0.25));
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 26px rgba(var(--glow-color), 0.55))
+        drop-shadow(0 0 120px rgba(var(--glow-color), 0.45));
+      opacity: 0.95;
+      transform: scale(1.01);
+    }
+  }
+  @keyframes box-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   .correct-expression {
